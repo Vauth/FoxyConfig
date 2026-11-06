@@ -1,11 +1,7 @@
 # FoxyVPN Config
-Centralized, real-time remote configuration service for the **FoxyVPN**.
-
----
-
 This repository hosts [`config.json`](config.json), which dynamically supplies HTTP headers, user agents, and protocol configurations across all client network components. Whenever Mozilla or Fastly updates rules, headers, or challenge mechanisms, updating this repository instantly updates all installed clients without requiring an app update or rebuild.
 
----
+<br>
 
 ## Delivery Endpoints
 
