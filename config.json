@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "controlPlane": {
+    "headers": {
+      "User-Agent": "MozillaVPN/2.24.0 (sys:android 14)",
+      "Accept": "*/*",
+      "Accept-Encoding": "identity"
+    },
+    "settings": {
+      "protocols": [
+        "HTTP_2",
+        "HTTP_1_1"
+      ]
+    }
+  },
+  "guardian": {
+    "headers": {
+      "User-Agent": "MozillaVPN/2.24.0 (sys:android 14)",
+      "Accept": "application/json",
+      "Accept-Encoding": "identity",
+      "Content-Type": "application/json",
+      "Cache-Control": "max-age=0"
+    }
+  },
+  "solver": {
+    "headers": {
+      "User-Agent": "MozillaVPN/2.24.0 (sys:android 14)",
+      "Accept-Encoding": "identity"
+    }
+  },
+  "browser": {
+    "headers": {
+      "User-Agent": "Mozilla/5.0 (Android 14; Mobile; rv:159.0) Gecko/159.0 Firefox/159.0"
+    }
+  }
+}
