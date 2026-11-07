@@ -58,4 +58,3 @@ Client apps dynamically interpolate device-specific parameters into header value
 - **Public Strings Only**: This repository only distributes standard HTTP request headers and protocol settings.
 - **No Executable Code**: The configuration file is pure JSON data parsed strictly by key; it cannot run scripts or executable instructions.
 - **Zero Telemetry**: The client performs a standard anonymous HTTP GET request to GitHub/jsDelivr and transmits zero user credentials, identifiers, or usage analytics.
-```
