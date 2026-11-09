@@ -15,6 +15,41 @@ The FoxyVPN client automatically pulls configuration with built-in CDN redundanc
 
 <br>
 
+<<<<<<< HEAD
+## Live Endpoint Status
+
+<!-- foxy-config-status-start -->
+### ✅ `controlPlane`
+
+| Target URL | HTTP Status | Fastly Status | Protocol |
+| :--- | :---: | :---: | :---: |
+| `https://api.accounts.firefox.com/v1/recovery_email/status` | `HTTP 401` | 🛡️ Passed | `HTTP/2` |
+| `https://accounts.firefox.com/` | `HTTP 200` | 🛡️ Passed | `HTTP/2` |
+
+### ✅ `guardian`
+
+| Target URL | HTTP Status | Fastly Status | Protocol |
+| :--- | :---: | :---: | :---: |
+| `https://vpn.mozilla.org/` | `HTTP 301` | 🛡️ Passed | `HTTP/2` |
+| `https://vpn.mozilla.org/api/v1/fpn/status` | `HTTP 400` | 🛡️ Passed | `HTTP/2` |
+
+### ✅ `solver`
+
+| Target URL | HTTP Status | Fastly Status | Protocol |
+| :--- | :---: | :---: | :---: |
+| `https://api.accounts.firefox.com/` | `HTTP 200` | 🛡️ Passed | `HTTP/2` |
+
+### ✅ `browser`
+
+| Target URL | HTTP Status | Fastly Status | Protocol |
+| :--- | :---: | :---: | :---: |
+| `https://accounts.firefox.com/?context=fx_desktop_v3&service=sync&action=email` | `HTTP 200` | 🛡️ Passed | `HTTP/2` |
+<!-- foxy-config-status-end -->
+
+<br>
+
+=======
+>>>>>>> e17e2008932114b14d5b27d461164982e19eb5aa
 ## Configuration Schema
 
 The configuration file is structured into modular components matching the client's internal network layers:
@@ -43,7 +78,10 @@ Client apps dynamically interpolate device-specific parameters into header value
 
 <br>
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> e17e2008932114b14d5b27d461164982e19eb5aa
 ## How the Client Handles Updates
 
 1. **First Launch & App Start**: The client checks for an updated configuration asynchronously immediately upon opening (both before and after authentication).
