@@ -2,11 +2,7 @@
   "version": 1,
   "controlPlane": {
     "headers": {
-<<<<<<< HEAD
       "User-Agent": "MozillaVPN/2.24.0 (sys:android {android_version})",
-=======
-      "User-Agent": "MozillaVPN/2.24.0 (sys:android 14)",
->>>>>>> e17e2008932114b14d5b27d461164982e19eb5aa
       "Accept": "*/*",
       "Accept-Encoding": "identity"
     },
@@ -19,36 +15,20 @@
   },
   "guardian": {
     "headers": {
-<<<<<<< HEAD
       "User-Agent": "MozillaVPN/2.24.0 (sys:android {android_version})",
       "Accept": "application/json",
       "Accept-Encoding": "identity"
-=======
-      "User-Agent": "MozillaVPN/2.24.0 (sys:android 14)",
-      "Accept": "application/json",
-      "Accept-Encoding": "identity",
-      "Content-Type": "application/json",
-      "Cache-Control": "max-age=0"
->>>>>>> e17e2008932114b14d5b27d461164982e19eb5aa
     }
   },
   "solver": {
     "headers": {
-<<<<<<< HEAD
       "User-Agent": "MozillaVPN/2.24.0 (sys:android {android_version})",
-=======
-      "User-Agent": "MozillaVPN/2.24.0 (sys:android 14)",
->>>>>>> e17e2008932114b14d5b27d461164982e19eb5aa
       "Accept-Encoding": "identity"
     }
   },
   "browser": {
     "headers": {
-<<<<<<< HEAD
       "User-Agent": "Mozilla/5.0 (Android {android_version}; Mobile; rv:159.0) Gecko/159.0 Firefox/159.0"
-=======
-      "User-Agent": "Mozilla/5.0 (Android 14; Mobile; rv:159.0) Gecko/159.0 Firefox/159.0"
->>>>>>> e17e2008932114b14d5b27d461164982e19eb5aa
     }
   }
 }

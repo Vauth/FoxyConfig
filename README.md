@@ -15,7 +15,6 @@ The FoxyVPN client automatically pulls configuration with built-in CDN redundanc
 
 <br>
 
-<<<<<<< HEAD
 ## Live Endpoint Status
 
 <!-- foxy-config-status-start -->
@@ -48,8 +47,6 @@ The FoxyVPN client automatically pulls configuration with built-in CDN redundanc
 
 <br>
 
-=======
->>>>>>> e17e2008932114b14d5b27d461164982e19eb5aa
 ## Configuration Schema
 
 The configuration file is structured into modular components matching the client's internal network layers:
@@ -78,10 +75,6 @@ Client apps dynamically interpolate device-specific parameters into header value
 
 <br>
 
-<<<<<<< HEAD
-=======
-
->>>>>>> e17e2008932114b14d5b27d461164982e19eb5aa
 ## How the Client Handles Updates
 
 1. **First Launch & App Start**: The client checks for an updated configuration asynchronously immediately upon opening (both before and after authentication).

@@ -1,6 +1,8 @@
 """
 FoxyConfig Verification Script
-Validates config.json schema and tests live endpoints.
+Validates config.json schema and tests live endpoints to ensure request
+headers and user-agents do not trigger Fastly bot blocks (HTTP 403 or 406).
+Can output a standalone markdown report and update README.md directly.
 """
 
 from __future__ import annotations
