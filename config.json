@@ -2,9 +2,9 @@
   "version": 2,
   "endpoints": {
     "guardian": {
-      "token": "https://vpn.mozilla.org//api/v1/fpn/token",
-      "status": "https://vpn.mozilla.org//api/v1/fpn/status",
-      "activate": "https://vpn.mozilla.org//api/v1/fpn/activate"
+      "token": "https://vpn.mozilla.org/api/v1/fpn/token",
+      "status": "https://vpn.mozilla.org/api/v1/fpn/status",
+      "activate": "https://vpn.mozilla.org/api/v1/fpn/activate"
     },
     "controlPlane": {
       "oauthToken": "https://oauth.accounts.firefox.com/v1/token",
@@ -19,8 +19,11 @@
     "exitCheck": "https://www.cloudflare.com/cdn-cgi/trace",
     "latencyProbe": "https://www.gstatic.com/generate_204"
   },
+  "relayerRoutes": [
+    "guardian"
+  ],
   "relayers": {
-    "cloudflare": "example.example",
+    "cloudflare": "sub.example.workers.dev",
     "vercel": "example.vercel.app"
   },
   "controlPlane": {
