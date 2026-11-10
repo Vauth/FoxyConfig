@@ -26,6 +26,13 @@
     "cloudflare": "sub.example.workers.dev",
     "vercel": "example.vercel.app"
   },
+  "failoverCodes": [
+    403, 406, 451,
+    500, 502, 503,
+    504, 520, 521,
+    522, 523, 524, 
+    525
+  ],
   "controlPlane": {
     "headers": {
       "User-Agent": "MozillaVPN/2.24.0 (sys:android {android_version})",
