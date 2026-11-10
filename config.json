@@ -1,5 +1,28 @@
 {
-  "version": 1,
+  "version": 2,
+  "endpoints": {
+    "guardian": {
+      "token": "https://vpn.mozilla.org//api/v1/fpn/token",
+      "status": "https://vpn.mozilla.org//api/v1/fpn/status",
+      "activate": "https://vpn.mozilla.org//api/v1/fpn/activate"
+    },
+    "controlPlane": {
+      "oauthToken": "https://oauth.accounts.firefox.com/v1/token",
+      "oauthFallback": "https://api.accounts.firefox.com/v1/oauth/token",
+      "authorization": "https://api.accounts.firefox.com/v1/oauth/authorization",
+      "recoveryStatus": "https://api.accounts.firefox.com/v1/recovery_email/status",
+      "sessionDestroy": "https://api.accounts.firefox.com/v1/session/destroy",
+      "login": "https://accounts.firefox.com/?context=fx_desktop_v3&service=sync&action=email"
+    },
+    "serverList": "https://firefox.settings.services.mozilla.com/v1/buckets/main/collections/vpn-serverlist/records",
+    "productDetails": "https://product-details.mozilla.org/1.0/firefox_versions.json",
+    "exitCheck": "https://www.cloudflare.com/cdn-cgi/trace",
+    "latencyProbe": "https://www.gstatic.com/generate_204"
+  },
+  "relayers": {
+    "cloudflare": "example.example",
+    "vercel": "example.vercel.app"
+  },
   "controlPlane": {
     "headers": {
       "User-Agent": "MozillaVPN/2.24.0 (sys:android {android_version})",
