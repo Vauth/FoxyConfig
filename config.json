@@ -31,13 +31,8 @@
   "controlPlane": {
     "headers": {
       "User-Agent": "MozillaVPN/2.24.0 (sys:android {android_version})",
-      "Accept": "*/*",
-      "Accept-Encoding": "identity",
-      "Origin": "https://accounts.firefox.com",
-      "Referer": "https://accounts.firefox.com/",
-      "Sec-Fetch-Dest": "empty",
-      "Sec-Fetch-Mode": "cors",
-      "Sec-Fetch-Site": "same-site"
+      "Accept": "application/json",
+      "Accept-Encoding": "identity"
     },
     "settings": {
       "protocols": [
