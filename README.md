@@ -1,12 +1,12 @@
 # FoxyVPN Config
 
-This repository hosts [`config.json`](config.json), which dynamically supplies HTTP headers, user agents, and protocol configurations across all client network components. Whenever Mozilla or Fastly updates rules, headers, or challenge mechanisms, updating this repository instantly updates all installed clients without requiring an app update or rebuild.
+This repository hosts [`config.json`](config.json), which dynamically supplies API endpoints, edge relayer routing, HTTP headers, user agents, and protocol configurations across all FoxyVPN network layers. Whenever Mozilla or Fastly updates rules, endpoints, or challenge mechanisms, updating this repository instantly updates all installed clients without requiring an app update or rebuild.
 
 <br>
 
 ## Delivery Endpoints
 
-The FoxyVPN client automatically pulls configuration with built-in CDN redundancy:
+The FoxyVPN client automatically pulls configuration with built-in CDN redundancy and atomic local caching:
 
 | Tier | Provider | URL |
 | :--- | :--- | :--- |
@@ -47,17 +47,27 @@ The FoxyVPN client automatically pulls configuration with built-in CDN redundanc
 
 <br>
 
-## Configuration Schema
+## Configuration Schema (v2)
 
 The configuration file is structured into modular components matching the client's internal network layers:
 
 | Field | Type | Description |
 | :--- | :--- | :--- |
-| `version` | `integer` | Schema version identifier (e.g. `1`). |
+| `version` | `integer` | Schema version identifier. |
+| `endpoints` | `object` | Target API endpoints for token provisioning, authentication, manifests, and connectivity probes. |
+| `endpoints.guardian` | `object` | Mozilla VPN Guardian token endpoints. |
+| `endpoints.controlPlane` | `object` | Firefox Accounts authentication and OAuth endpoints. |
+| `endpoints.serverList` | `string` | Mozilla Remote Settings server list bucket URL. |
+| `endpoints.productDetails` | `string` | Mozilla Firefox releases manifest URL for dynamic user-agent derivation. |
+| `endpoints.exitCheck` | `string` | Diagnostic egress IP and WireGuard exit node verification URL. |
+| `endpoints.latencyProbe` | `string` | Connectivity and latency measurement probe URL. |
+| `relayerRoutes` | `array` | Service categories routed through edge relayers upon regional blocks or censorship. |
+| `relayers` | `object` | Available Edge Relayer proxy worker hostnames or URLs. |
+| `failoverCodes` | `array` | HTTP response codes that trigger edge relayer failover. |
 | `controlPlane` | `object` | Headers and protocols for Firefox Accounts authentication and OAuth requests. |
-| `guardian` | `object` | Headers for Mozilla Guardian VPN token provisioning (`/api/v1/fpn/*`). |
-| `solver` | `object` | Headers for the automated Fastly bot challenge solver (proof-of-work, PAT, post-backs). |
-| `browser` | `object` | Headers (primarily `User-Agent`) applied to the in-app authentication browser (WebView). |
+| `guardian` | `object` | Headers for Mozilla Guardian VPN token provisioning. |
+| `solver` | `object` | Headers for automated Fastly bot challenge solving (proof-of-work, PAT, post-backs). |
+| `browser` | `object` | Headers applied to the in-app authentication browser (WebView). |
 
 <br>
 
@@ -67,8 +77,8 @@ Client apps dynamically interpolate device-specific parameters into header value
 
 | Variable | Aliases | Replaced With | Example |
 | :--- | :--- | :--- | :--- |
-| `{android_version}` | `${android_version}`, `{os_version}`, `${os_version}` | Device's Android OS release string | `14`, `15`, `13` |
-| `{android_sdk}` | `${android_sdk}` | Device's Android API SDK level | `34`, `35`, `33` |
+| `{android_version}` | `${android_version}`, `{os_version}`, `${os_version}` | Device's Android OS release string | `14`, `15`, `16` |
+| `{android_sdk}` | `${android_sdk}` | Device's Android API SDK level | `34`, `35`, `36` |
 
 > [!TIP]
 > If a header string contains no template variables, it is used as a static literal without modification.
@@ -84,8 +94,15 @@ Client apps dynamically interpolate device-specific parameters into header value
 
 <br>
 
+## Edge Relayer Infrastructure
+
+Community and private relayers can be deployed to bypass regional censorship without routing tunnel traffic through third parties. See the [Relayer Docs](https://github.com/Vauth/FoxyVPN/tree/main/relayer) in the FoxyVPN repository.
+
+
+<br>
+
 ## Privacy & Safety
 
-- **Public Strings Only**: This repository only distributes standard HTTP request headers and protocol settings.
+- **Public Strings Only**: This repository only distributes standard HTTP request headers, public API URLs, and protocol settings.
 - **No Executable Code**: The configuration file is pure JSON data parsed strictly by key; it cannot run scripts or executable instructions.
 - **Zero Telemetry**: The client performs a standard anonymous HTTP GET request to GitHub/jsDelivr and transmits zero user credentials, identifiers, or usage analytics.

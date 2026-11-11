@@ -1,7 +1,9 @@
 """
 FoxyConfig Verification Script
-Validates config.json schema and tests live endpoints to ensure request
+Validates config.json schema (v2) and tests live endpoints to ensure request
 headers and user-agents do not trigger Fastly bot blocks (HTTP 403 or 406).
+Dynamically extracts probe targets from config.json endpoints and verifies
+relayer endpoints, remote services, and header profiles.
 Can output a standalone markdown report and update README.md directly.
 """
 
@@ -18,6 +20,7 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+from urllib.parse import urlparse
 
 PLACEHOLDER_REGEX = re.compile(r"(\$\{?[a-zA-Z0-9_]+\}?)")
 STATUS_START_MARKER = "<!-- foxy-config-status-start -->"
@@ -27,39 +30,6 @@ DEFAULT_ENV = {
     "android_version": "16",
     "android_sdk": "36",
 }
-
-TARGET_ENDPOINTS = [
-    {
-        "component": "controlPlane",
-        "url": "https://api.accounts.firefox.com/v1/recovery_email/status",
-        "method": "GET",
-    },
-    {
-        "component": "controlPlane",
-        "url": "https://accounts.firefox.com/",
-        "method": "GET",
-    },
-    {
-        "component": "guardian",
-        "url": "https://vpn.mozilla.org/",
-        "method": "GET",
-    },
-    {
-        "component": "guardian",
-        "url": "https://vpn.mozilla.org/api/v1/fpn/status",
-        "method": "GET",
-    },
-    {
-        "component": "solver",
-        "url": "https://api.accounts.firefox.com/",
-        "method": "GET",
-    },
-    {
-        "component": "browser",
-        "url": "https://accounts.firefox.com/?context=fx_desktop_v3&service=sync&action=email",
-        "method": "GET",
-    },
-]
 
 
 @dataclass
@@ -77,8 +47,12 @@ class EndpointTestResult:
 @dataclass
 class SchemaValidationResult:
     is_valid: bool
-    version: int = 1
+    version: int = 2
     components_found: List[str] = field(default_factory=list)
+    endpoints_found: List[str] = field(default_factory=list)
+    relayers_found: List[str] = field(default_factory=list)
+    relayer_routes: List[str] = field(default_factory=list)
+    failover_codes: List[int] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
 
@@ -108,8 +82,8 @@ def get_file_hash(path: Path) -> str:
 
 def resolve_placeholders(raw: str, env: Dict[str, str] = DEFAULT_ENV) -> str:
     result = raw
-    android_ver = env.get("android_version", "14")
-    android_sdk = env.get("android_sdk", "34")
+    android_ver = env.get("android_version", "16")
+    android_sdk = env.get("android_sdk", "36")
 
     replacements = [
         ("${android_version}", android_ver),
@@ -133,6 +107,13 @@ def resolve_placeholders(raw: str, env: Dict[str, str] = DEFAULT_ENV) -> str:
     return result
 
 
+def is_valid_url(url: Any) -> bool:
+    if not isinstance(url, str) or not url.strip():
+        return False
+    parsed = urlparse(url)
+    return parsed.scheme in ("http", "https") and bool(parsed.netloc)
+
+
 def validate_schema(config_data: Any) -> SchemaValidationResult:
     result = SchemaValidationResult(is_valid=True)
 
@@ -144,10 +125,104 @@ def validate_schema(config_data: Any) -> SchemaValidationResult:
     version = config_data.get("version")
     if not isinstance(version, int) or version < 1:
         result.is_valid = False
-        result.errors.append("Field 'version' must be a positive integer")
+        result.errors.append("Field 'version' must be a positive integer (e.g. 2)")
     else:
         result.version = version
 
+    # Validate endpoints
+    endpoints = config_data.get("endpoints")
+    if endpoints is not None:
+        if not isinstance(endpoints, dict):
+            result.is_valid = False
+            result.errors.append("Field 'endpoints' must be an object")
+        else:
+            # Guardian endpoints
+            guardian_eps = endpoints.get("guardian")
+            if guardian_eps is not None:
+                if not isinstance(guardian_eps, dict):
+                    result.is_valid = False
+                    result.errors.append("endpoints.guardian must be an object")
+                else:
+                    for ep_name in ("token", "status", "activate"):
+                        url = guardian_eps.get(ep_name)
+                        if url is not None and not is_valid_url(url):
+                            result.is_valid = False
+                            result.errors.append(f"endpoints.guardian.{ep_name} must be a valid URL")
+                        elif url is not None:
+                            result.endpoints_found.append(f"guardian.{ep_name}")
+
+            # Control plane endpoints
+            cp_eps = endpoints.get("controlPlane")
+            if cp_eps is not None:
+                if not isinstance(cp_eps, dict):
+                    result.is_valid = False
+                    result.errors.append("endpoints.controlPlane must be an object")
+                else:
+                    for ep_name in ("oauthToken", "oauthFallback", "authorization", "recoveryStatus", "sessionDestroy", "login"):
+                        url = cp_eps.get(ep_name)
+                        if url is not None and not is_valid_url(url):
+                            result.is_valid = False
+                            result.errors.append(f"endpoints.controlPlane.{ep_name} must be a valid URL")
+                        elif url is not None:
+                            result.endpoints_found.append(f"controlPlane.{ep_name}")
+
+            # Direct endpoints
+            for ep_name in ("serverList", "productDetails", "exitCheck", "latencyProbe"):
+                url = endpoints.get(ep_name)
+                if url is not None and not is_valid_url(url):
+                    result.is_valid = False
+                    result.errors.append(f"endpoints.{ep_name} must be a valid URL")
+                elif url is not None:
+                    result.endpoints_found.append(ep_name)
+    else:
+        result.warnings.append("Field 'endpoints' is not defined in config")
+
+    # Validate relayers
+    relayers = config_data.get("relayers")
+    if relayers is not None:
+        if not isinstance(relayers, dict):
+            result.is_valid = False
+            result.errors.append("Field 'relayers' must be an object map (name -> domain/url)")
+        else:
+            for k, v in relayers.items():
+                if not isinstance(k, str) or not isinstance(v, str) or not v.strip():
+                    result.is_valid = False
+                    result.errors.append(f"relayers['{k}'] must be a non-empty string endpoint")
+                else:
+                    result.relayers_found.append(k)
+
+    # Validate relayerRoutes
+    relayer_routes = config_data.get("relayerRoutes")
+    if relayer_routes is not None:
+        if not isinstance(relayer_routes, list):
+            result.is_valid = False
+            result.errors.append("Field 'relayerRoutes' must be a list of route categories (e.g. ['guardian'])")
+        else:
+            valid_routes = {"guardian", "fxa", "config", "server_list"}
+            for route in relayer_routes:
+                if not isinstance(route, str):
+                    result.is_valid = False
+                    result.errors.append(f"Item in 'relayerRoutes' must be a string: {route}")
+                else:
+                    result.relayer_routes.append(route)
+                    if route.lower() not in valid_routes:
+                        result.warnings.append(f"Unknown relayer route category '{route}'")
+
+    # Validate failoverCodes
+    failover_codes = config_data.get("failoverCodes")
+    if failover_codes is not None:
+        if not isinstance(failover_codes, list):
+            result.is_valid = False
+            result.errors.append("Field 'failoverCodes' must be a list of HTTP status code integers (e.g. [451])")
+        else:
+            for code in failover_codes:
+                if not isinstance(code, int) or code < 100 or code > 599:
+                    result.is_valid = False
+                    result.errors.append(f"Item in 'failoverCodes' must be an integer between 100 and 599: {code}")
+                else:
+                    result.failover_codes.append(code)
+
+    # Validate header components
     expected_components = ["controlPlane", "guardian", "solver", "browser"]
     for comp in expected_components:
         if comp not in config_data:
@@ -208,6 +283,75 @@ def validate_schema(config_data: Any) -> SchemaValidationResult:
                             result.errors.append(f"Invalid protocol in '{comp}': {p}")
 
     return result
+
+
+def extract_targets(config_data: Dict[str, Any]) -> List[Dict[str, str]]:
+    endpoints = config_data.get("endpoints", {})
+    guardian_eps = endpoints.get("guardian", {}) if isinstance(endpoints, dict) else {}
+    cp_eps = endpoints.get("controlPlane", {}) if isinstance(endpoints, dict) else {}
+
+    targets: List[Dict[str, str]] = []
+
+    # 1. controlPlane
+    recovery_url = cp_eps.get("recoveryStatus", "https://api.accounts.firefox.com/v1/recovery_email/status")
+    targets.append({
+        "component": "controlPlane",
+        "url": recovery_url,
+        "method": "GET",
+    })
+
+    login_url = cp_eps.get("login", "https://accounts.firefox.com/?context=fx_desktop_v3&service=sync&action=email")
+    parsed_login = urlparse(login_url)
+    root_login = f"{parsed_login.scheme}://{parsed_login.netloc}/" if parsed_login.netloc else "https://accounts.firefox.com/"
+    targets.append({
+        "component": "controlPlane",
+        "url": root_login,
+        "method": "GET",
+    })
+
+    # 2. guardian
+    token_url = guardian_eps.get("token", "https://vpn.mozilla.org/api/v1/fpn/token")
+    parsed_token = urlparse(token_url)
+    root_guardian = f"{parsed_token.scheme}://{parsed_token.netloc}/" if parsed_token.netloc else "https://vpn.mozilla.org/"
+    targets.append({
+        "component": "guardian",
+        "url": root_guardian,
+        "method": "GET",
+    })
+
+    status_url = guardian_eps.get("status", "https://vpn.mozilla.org/api/v1/fpn/status")
+    targets.append({
+        "component": "guardian",
+        "url": status_url,
+        "method": "GET",
+    })
+
+    # 3. solver
+    parsed_recovery = urlparse(recovery_url)
+    root_api = f"{parsed_recovery.scheme}://{parsed_recovery.netloc}/" if parsed_recovery.netloc else "https://api.accounts.firefox.com/"
+    targets.append({
+        "component": "solver",
+        "url": root_api,
+        "method": "GET",
+    })
+
+    # 4. browser
+    targets.append({
+        "component": "browser",
+        "url": login_url,
+        "method": "GET",
+    })
+
+    # 5. Remote Services
+    product_details_url = endpoints.get("productDetails") if isinstance(endpoints, dict) else None
+    if product_details_url and is_valid_url(product_details_url):
+        targets.append({
+            "component": "services",
+            "url": product_details_url,
+            "method": "GET",
+        })
+
+    return targets
 
 
 def probe_with_httpx(
@@ -275,11 +419,14 @@ def run_tests(config_path: Path) -> Tuple[SchemaValidationResult, List[EndpointT
     except ImportError:
         has_httpx = False
 
+    targets = extract_targets(config_data)
     results: List[EndpointTestResult] = []
 
-    for target in TARGET_ENDPOINTS:
+    for target in targets:
         comp_name = target["component"]
-        comp_cfg = config_data.get(comp_name, {})
+        # Use controlPlane config for services category
+        header_comp = "controlPlane" if comp_name == "services" else comp_name
+        comp_cfg = config_data.get(header_comp, {})
         raw_headers = comp_cfg.get("headers", {})
         settings = comp_cfg.get("settings", {})
         protocols = settings.get("protocols", ["HTTP_2", "HTTP_1_1"])
@@ -355,7 +502,7 @@ def format_report(
             lines.append(f"- ⚠️ {err}")
         lines.append("")
 
-    components = ["controlPlane", "guardian", "solver", "browser"]
+    components = ["controlPlane", "guardian", "solver", "browser", "services"]
     for comp in components:
         comp_results = [r for r in test_results if r.component == comp]
         if not comp_results:
@@ -431,7 +578,7 @@ def update_readme_content(readme_path: Path, report_block: str) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Verify FoxyConfig config.json against Fastly Bot Shield")
+    parser = argparse.ArgumentParser(description="Verify FoxyConfig config.json (v2) against Fastly Bot Shield")
     parser.add_argument("--config", default="config.json", help="Path to config.json")
     parser.add_argument("--output-report", default="report.md", help="Path to write standalone markdown report")
     parser.add_argument("--readme", default=None, help="Path to README.md to update in-place")
@@ -451,7 +598,7 @@ def main() -> int:
     }
 
     print("=" * 80)
-    print("FoxyConfig Verification CI")
+    print("FoxyConfig Verification CI (v2)")
     print(f"Config File: {config_path.resolve()} ({config_meta['size_bytes']} bytes)")
     print(f"SHA-256:     {config_sha}")
     print(f"Git Commit:  {git_info['commit']} (branch: {git_info['branch']})")
