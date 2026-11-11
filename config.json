@@ -23,15 +23,10 @@
     "guardian"
   ],
   "relayers": {
-    "cloudflare": "sub.example.workers.dev",
-    "vercel": "example.vercel.app"
+    "cloudflare": "relayer.foxyvpn.workers.dev"
   },
   "failoverCodes": [
-    403, 406, 451,
-    500, 502, 503,
-    504, 520, 521,
-    522, 523, 524, 
-    525
+    451
   ],
   "controlPlane": {
     "headers": {
