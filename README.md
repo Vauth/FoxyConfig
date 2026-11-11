@@ -43,6 +43,12 @@ The FoxyVPN client automatically pulls configuration with built-in CDN redundanc
 | Target URL | HTTP Status | Fastly Status | Protocol |
 | :--- | :---: | :---: | :---: |
 | `https://accounts.firefox.com/?context=fx_desktop_v3&service=sync&action=email` | `HTTP 200` | 🛡️ Passed | `HTTP/2` |
+
+### ✅ `services`
+
+| Target URL | HTTP Status | Fastly Status | Protocol |
+| :--- | :---: | :---: | :---: |
+| `https://product-details.mozilla.org/1.0/firefox_versions.json` | `HTTP 200` | 🛡️ Passed | `HTTP/2` |
 <!-- foxy-config-status-end -->
 
 <br>
