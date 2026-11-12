@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "endpoints": {
     "guardian": {
       "token": "https://vpn.mozilla.org/api/v1/fpn/token",
@@ -7,8 +7,8 @@
       "activate": "https://vpn.mozilla.org/api/v1/fpn/activate"
     },
     "controlPlane": {
-      "oauthToken": "https://oauth.accounts.firefox.com/v1/token",
-      "oauthFallback": "https://api.accounts.firefox.com/v1/oauth/token",
+      "oauthToken": "https://api.accounts.firefox.com/v1/oauth/token",
+      "oauthFallback": "https://oauth.accounts.firefox.com/v1/token"
       "authorization": "https://api.accounts.firefox.com/v1/oauth/authorization",
       "recoveryStatus": "https://api.accounts.firefox.com/v1/recovery_email/status",
       "sessionDestroy": "https://api.accounts.firefox.com/v1/session/destroy",
