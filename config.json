@@ -23,7 +23,8 @@
     "guardian"
   ],
   "relayers": {
-    "cloudflare": "relayer.foxyvpn.workers.dev"
+    "cloudflare": "relayer.foxyvpn.workers.dev",
+    "vercel": "relayer.foxyvpn.vercel.app"
   },
   "failoverCodes": [
     451
