@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 5,
   "endpoints": {
     "guardian": {
       "token": "https://vpn.mozilla.org/api/v1/fpn/token",
