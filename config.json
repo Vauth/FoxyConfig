@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 3,
   "endpoints": {
     "guardian": {
       "token": "https://vpn.mozilla.org/api/v1/fpn/token",
@@ -7,7 +7,7 @@
       "activate": "https://vpn.mozilla.org/api/v1/fpn/activate"
     },
     "controlPlane": {
-      "oauthToken": "https://oauth.accounts.firefox.com/v1/token",
+      "oauthToken": "https://api.accounts.firefox.com/v1/oauth/token",
       "oauthFallback": "https://oauth.accounts.firefox.com/v1/token",
       "authorization": "https://api.accounts.firefox.com/v1/oauth/authorization",
       "recoveryStatus": "https://api.accounts.firefox.com/v1/recovery_email/status",
@@ -20,35 +20,19 @@
     "latencyProbe": "https://www.gstatic.com/generate_204"
   },
   "relayerRoutes": [
-    "guardian",
-    "fxa"
+    "guardian"
   ],
   "relayers": {
     "cloudflare": "relayer.foxyvpn.workers.dev",
     "vercel": "relayer.foxyvpn.vercel.app"
   },
   "failoverCodes": [
-    406,
     451
   ],
-  "oauth": {
-    "headers": {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:159.0) Gecko/20100101 Firefox/159.0",
-      "Accept": "application/json;q=0.9,*/*;q=0.2",
-      "Accept-Language": "en-US, en",
-      "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-cache",
-      "Pragma": "no-cache",
-      "Sec-Fetch-Dest": "empty",
-      "Sec-Fetch-Mode": "no-cors",
-      "Sec-Fetch-Site": "none",
-      "Priority": "u=4"
-    }
-  },
   "controlPlane": {
     "headers": {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:159.0) Gecko/20100101 Firefox/159.0",
-      "Accept": "*/*",
+      "User-Agent": "MozillaVPN/2.24.0 (sys:android {android_version})",
+      "Accept": "application/json",
       "Accept-Encoding": "identity"
     },
     "settings": {
@@ -60,16 +44,14 @@
   },
   "guardian": {
     "headers": {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:159.0) Gecko/20100101 Firefox/159.0",
+      "User-Agent": "MozillaVPN/2.24.0 (sys:android {android_version})",
       "Accept": "application/json",
-      "Accept-Encoding": "identity",
-      "Content-Type": "application/json",
-      "Cache-Control": "max-age=0"
+      "Accept-Encoding": "identity"
     }
   },
   "solver": {
     "headers": {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:159.0) Gecko/20100101 Firefox/159.0",
+      "User-Agent": "MozillaVPN/2.24.0 (sys:android {android_version})",
       "Accept-Encoding": "identity"
     }
   },
