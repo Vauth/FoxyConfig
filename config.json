@@ -7,7 +7,7 @@
       "activate": "https://vpn.mozilla.org/api/v1/fpn/activate"
     },
     "controlPlane": {
-      "oauthToken": "https://api.accounts.firefox.com/v1/oauth/token",
+      "oauthToken": "https://oauth.accounts.firefox.com/v1/token",
       "oauthFallback": "https://oauth.accounts.firefox.com/v1/token",
       "authorization": "https://api.accounts.firefox.com/v1/oauth/authorization",
       "recoveryStatus": "https://api.accounts.firefox.com/v1/recovery_email/status",
