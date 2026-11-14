@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "endpoints": {
     "guardian": {
       "token": "https://vpn.mozilla.org/api/v1/fpn/token",
@@ -20,13 +20,15 @@
     "latencyProbe": "https://www.gstatic.com/generate_204"
   },
   "relayerRoutes": [
-    "guardian"
+    "guardian",
+    "fxa"
   ],
   "relayers": {
     "cloudflare": "relayer.foxyvpn.workers.dev",
     "vercel": "relayer.foxyvpn.vercel.app"
   },
   "failoverCodes": [
+    406,
     451
   ],
   "controlPlane": {
@@ -51,7 +53,7 @@
   },
   "solver": {
     "headers": {
-      "User-Agent": "MozillaVPN/2.24.0 (sys:android {android_version})",
+      "User-Agent": "Mozilla/5.0 (Android {android_version}; Mobile; rv:159.0) Gecko/159.0 Firefox/159.0",
       "Accept-Encoding": "identity"
     }
   },
