@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "endpoints": {
     "guardian": {
       "token": "https://vpn.mozilla.org/api/v1/fpn/token",
@@ -21,7 +21,8 @@
   },
   "relayerRoutes": [
     "guardian",
-    "fxa"
+    "fxa",
+    "config"
   ],
   "relayers": {
     "cloudflare": "relayer.foxyvpn.workers.dev",
