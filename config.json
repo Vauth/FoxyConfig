@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "endpoints": {
     "guardian": {
       "token": "https://vpn.mozilla.org/api/v1/fpn/token",
@@ -8,7 +8,7 @@
     },
     "controlPlane": {
       "oauthToken": "https://oauth.accounts.firefox.com/v1/token",
-      "oauthFallback": "https://oauth.accounts.firefox.com/v1/token",
+      "oauthFallback": "https://api.accounts.firefox.com/v1/oauth/token",
       "authorization": "https://api.accounts.firefox.com/v1/oauth/authorization",
       "recoveryStatus": "https://api.accounts.firefox.com/v1/recovery_email/status",
       "sessionDestroy": "https://api.accounts.firefox.com/v1/session/destroy",
@@ -22,7 +22,8 @@
   "relayerRoutes": [
     "guardian",
     "fxa",
-    "config"
+    "config",
+    "server_list"
   ],
   "relayers": {
     "cloudflare": "relayer.foxyvpn.workers.dev",
@@ -49,7 +50,8 @@
     "headers": {
       "User-Agent": "MozillaVPN/2.24.0 (sys:android {android_version})",
       "Accept": "application/json",
-      "Accept-Encoding": "identity"
+      "Accept-Encoding": "identity",
+      "Cache-Control": "max-age=0"
     }
   },
   "solver": {
