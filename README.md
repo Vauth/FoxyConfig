@@ -32,11 +32,11 @@ The FoxyVPN client automatically pulls configuration with built-in CDN redundanc
 | `https://vpn.mozilla.org/` | `HTTP 301` | 🛡️ Passed | `HTTP/2` |
 | `https://vpn.mozilla.org/api/v1/fpn/status` | `HTTP 400` | 🛡️ Passed | `HTTP/2` |
 
-### ❌ `solver`
+### ✅ `solver`
 
 | Target URL | HTTP Status | Fastly Status | Protocol |
 | :--- | :---: | :---: | :---: |
-| `https://api.accounts.firefox.com/` | **406** | 🚫 **BLOCKED (406)** | `HTTP/2` |
+| `https://api.accounts.firefox.com/` | `HTTP 200` | 🛡️ Passed | `HTTP/2` |
 
 ### ✅ `browser`
 
@@ -49,21 +49,6 @@ The FoxyVPN client automatically pulls configuration with built-in CDN redundanc
 | Target URL | HTTP Status | Fastly Status | Protocol |
 | :--- | :---: | :---: | :---: |
 | `https://product-details.mozilla.org/1.0/firefox_versions.json` | `HTTP 200` | 🛡️ Passed | `HTTP/2` |
-
-<details>
-<summary><b>🔍 Failure Details & Diagnostic Logs</b></summary>
-
-#### ❌ `solver` -> `https://api.accounts.firefox.com/`
-- **HTTP Status**: `406`
-- **Error**: Fastly bot-protection blocked request: HTTP 406
-- **Headers Sent**:
-  ```json
-  {
-    "User-Agent": "Mozilla/5.0 (Android 16; Mobile; rv:159.0) Gecko/159.0 Firefox/159.0",
-    "Accept-Encoding": "identity"
-  }
-  ```
-</details>
 <!-- foxy-config-status-end -->
 
 <br>
